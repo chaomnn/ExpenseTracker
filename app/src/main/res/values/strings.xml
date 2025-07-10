@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Expense Tracker</string>
+    <string name="my_expenses">My Expenses</string>
+    <string name="total_expenses">Total Expenses</string>
+    <string name="currency_eur">EUR</string>
+    <string name="edit_categories">Edit Categories</string>
+    <string name="add_category">Add Category</string>
+</resources>
