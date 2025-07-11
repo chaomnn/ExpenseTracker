@@ -5,8 +5,12 @@
     <string name="currency_eur">EUR</string>
     <string name="edit_categories">Edit Categories</string>
     <string name="add_category">Add Category</string>
+    <string name="add_item">Add item</string>
     <string name="all_transactions">All transactions</string>
     <string name="save">Save</string>
     <string name="selected_color">Selected color: </string>
-    <string name="category_name">Enter category name</string>
+    <string name="category_name">Category name</string>
+    <string name="description">Description</string>
+    <string name="amount_eur">Amount (EUR)</string>
+    <string name="add_transaction">Add transaction</string>
 </resources>

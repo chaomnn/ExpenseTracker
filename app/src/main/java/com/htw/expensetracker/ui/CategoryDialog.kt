@@ -2,13 +2,10 @@ package com.htw.expensetracker.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
@@ -18,43 +15,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import com.htw.expensetracker.R
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.htw.expensetracker.data.Category
 import com.htw.expensetracker.ui.graphics.colorPicker
+import java.util.UUID
 
+// TODO make the same dialog appear when editing a category
 @Composable
-fun addCategoryDialog(onDismissRequest: () -> Unit, onSaveRequest: (category: Category) -> Unit) {
-    var categoryColor by remember { mutableStateOf(0) }
-    var categoryName by remember { mutableStateOf("") }
+fun EditCategoryDialog(onDismissRequest: () -> Unit, onSaveRequest: (category: Category) -> Unit) {
+    val categoryColor = remember { mutableStateOf(0) }
+    val categoryName = remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(modifier = Modifier
                 .fillMaxWidth()
-                .height(420.dp)
+                .height(480.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp)) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                colorPicker(onChange = { categoryColor = it })
+                Text(text = stringResource(R.string.add_category))
+                colorPicker(onChange = { categoryColor.value = it })
                 OutlinedTextField(
-                    value = categoryName,
-                    onValueChange = { categoryName = it },
-                    label = { Text("Label") },
-                    placeholder = { stringResource(R.string.category_name) }
+                    value = categoryName.value,
+                    onValueChange = { categoryName.value = it },
+                    label = { Text(stringResource(R.string.category_name)) }
                 )
                 TextButton(
                     onClick = {
-                        // TODO save category to database
-                        val newCategory = Category(name = categoryName, clr = categoryColor, amount = 10f)
+                        // TODO save to database and cloud
+                        val newCategory = Category(id = UUID.randomUUID().toString(), name = categoryName.value,
+                            clr = categoryColor.value, amount = 10f)
                         onSaveRequest(newCategory)
                         onDismissRequest()
                               },

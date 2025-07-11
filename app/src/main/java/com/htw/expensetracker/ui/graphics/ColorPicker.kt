@@ -2,6 +2,7 @@ package com.htw.expensetracker.ui.graphics
 
 import android.graphics.Color.HSVToColor
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
@@ -26,10 +27,12 @@ fun colorPicker(onChange: (categoryColor: Int) -> Unit) {
     var saturation by remember { mutableStateOf(0f) }
     var value by remember { mutableStateOf(1f) }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 12.dp)) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(vertical = 12.dp)) {
         Row {
             Text(stringResource(R.string.selected_color))
-            Canvas(modifier = Modifier.size(15.dp).offset(x = 4.dp, y = 5.dp)) {
+            Canvas(modifier = Modifier.size(15.dp).offset(x = 4.dp, y = 8.dp)) {
                 onChange(getArgbColor(hue, saturation, value))
                 drawRect(Color.hsv(hue, saturation, value))
             }

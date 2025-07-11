@@ -1,12 +1,12 @@
 package com.htw.expensetracker.ui.graphics
 
 import androidx.compose.runtime.Composable
-import com.htw.expensetracker.calculateAmount
 import com.htw.expensetracker.data.Category
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import com.htw.expensetracker.ui.calculateAmount
 import kotlin.math.min
 
 @Composable
