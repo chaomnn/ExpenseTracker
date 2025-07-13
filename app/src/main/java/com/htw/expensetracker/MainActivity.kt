@@ -112,7 +112,8 @@ fun expensesApp() {
                     if (showAddTransactionDialog.value) {
                         EditTransactionDialog(
                             onDismissRequest = { showAddTransactionDialog.value = false },
-                            onSaveRequest = { transaction -> transactionsList.add(transaction)}
+                            onSaveRequest = { transaction -> transactionsList.add(transaction)},
+                            categoryList = categoriesList
                         )
                     }
                 } // NavDestinations.TRANSACTIONS

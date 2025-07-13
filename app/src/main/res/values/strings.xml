@@ -13,4 +13,5 @@
     <string name="description">Description</string>
     <string name="amount_eur">Amount (EUR)</string>
     <string name="add_transaction">Add transaction</string>
+    <string name="select_category">Select category</string>
 </resources>

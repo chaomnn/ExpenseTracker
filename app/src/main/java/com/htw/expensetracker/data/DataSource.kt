@@ -15,15 +15,15 @@ object DataSource {
     val defaultCategory = Category("5","Default", 0f, android.graphics.Color.YELLOW)
 
     private val transactionsExample: ArrayList<Transaction> = arrayListOf(
-        Transaction("1","Lidl", "10.07.2025", 12f, defaultCategory),
-        Transaction("2","Rewe", "09.07.2025", 13f, defaultCategory),
-        Transaction("3","Edeka", "08.07.2025", 15f, defaultCategory),
-        Transaction("4","Rossman", "07.07.2025", 19f, defaultCategory),
-        Transaction("5","Apotheke", "06.07.2025", 22f, defaultCategory),
-        Transaction("6","Money transfer", "05.07.2025", 11f, defaultCategory),
-        Transaction("7","Coffee", "04.07.2025", 5f, defaultCategory),
-        Transaction("8","Train ticket", "03.07.2025", 59f, defaultCategory),
-        Transaction("9","Breakfast", "02.07.2025", 15f, defaultCategory)
+        Transaction("1","Lidl", "10.07.2025", 12f, defaultCategory.id),
+        Transaction("2","Rewe", "09.07.2025", 13f, defaultCategory.id),
+        Transaction("3","Edeka", "08.07.2025", 15f, defaultCategory.id),
+        Transaction("4","Rossman", "07.07.2025", 19f, defaultCategory.id),
+        Transaction("5","Apotheke", "06.07.2025", 22f, defaultCategory.id),
+        Transaction("6","Money transfer", "05.07.2025", 11f, defaultCategory.id),
+        Transaction("7","Coffee", "04.07.2025", 5f, defaultCategory.id),
+        Transaction("8","Train ticket", "03.07.2025", 59f, defaultCategory.id),
+        Transaction("9","Breakfast", "02.07.2025", 15f, defaultCategory.id)
     )
 
     fun fetchCategories(): ArrayList<Category> {
