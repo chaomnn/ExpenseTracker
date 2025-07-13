@@ -18,28 +18,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.htw.expensetracker.data.Category
 import com.htw.expensetracker.ui.theme.ExpenseTrackerTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.htw.expensetracker.data.DataSource
-import com.htw.expensetracker.data.Transaction
 import com.htw.expensetracker.ui.EditCategoryDialog
 import com.htw.expensetracker.ui.EditTransactionDialog
-import com.htw.expensetracker.ui.categoryScreen
+import com.htw.expensetracker.ui.CategoryScreen
 import com.htw.expensetracker.ui.transactionsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            expensesApp() // TODO change
+            ExpensesApp() // TODO change
         }
     }
 }
@@ -55,15 +54,15 @@ val defaultPadding = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun expensesApp() {
+fun ExpensesApp() {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen = appRoutes.find { it == currentDestination?.route } ?: NavDestinations.CATEGORIES
 
     // TODO change
-    val categoriesList: ArrayList<Category> by remember { mutableStateOf(DataSource.fetchCategories()) }
-    val transactionsList: ArrayList<Transaction> by remember { mutableStateOf(DataSource.fetchTransactions()) }
+    var categoriesList by remember { mutableStateOf(DataSource.fetchCategories().toList()) }
+    var transactionsList by remember { mutableStateOf(DataSource.fetchTransactions().toList()) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val showAddCategoryDialog = remember { mutableStateOf(false) }
@@ -98,11 +97,14 @@ fun expensesApp() {
             innerPadding ->
             NavHost(navController = navController, startDestination = NavDestinations.CATEGORIES) {
                 composable(NavDestinations.CATEGORIES) {
-                    categoryScreen(innerPadding, categoriesList, navController)
+                    CategoryScreen(innerPadding, categoriesList, navController,
+                        deleteCategory = { categoryToDelete ->
+                            categoriesList = categoriesList.filter { it.id != categoryToDelete.id }
+                        })
                     if (showAddCategoryDialog.value) {
                         EditCategoryDialog(
                             onDismissRequest = { showAddCategoryDialog.value = false },
-                            onSaveRequest = { category -> categoriesList.add(category)}
+                            onSaveRequest = { category -> categoriesList = categoriesList + category }
                         )
                     }
                 } // NavDestinations.CATEGORIES
@@ -112,7 +114,7 @@ fun expensesApp() {
                     if (showAddTransactionDialog.value) {
                         EditTransactionDialog(
                             onDismissRequest = { showAddTransactionDialog.value = false },
-                            onSaveRequest = { transaction -> transactionsList.add(transaction)},
+                            onSaveRequest = { transaction ->  transactionsList = transactionsList + transaction },
                             categoryList = categoriesList
                         )
                     }

@@ -2,6 +2,7 @@ package com.htw.expensetracker.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,9 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,10 +36,11 @@ import com.htw.expensetracker.defaultPadding
 import com.htw.expensetracker.ui.graphics.transactionChart
 
 @Composable
-fun categoryScreen(
+fun CategoryScreen(
     innerPadding: PaddingValues,
     categoryDataset: List<Category>,
-    navController: NavController
+    navController: NavController,
+    deleteCategory: (category: Category) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(innerPadding),
@@ -49,38 +57,106 @@ fun categoryScreen(
                     + " " + stringResource(R.string.currency_eur),
             modifier = Modifier.padding(top = defaultPadding, bottom = defaultPadding)
         )
-        categoryList(categoryDataset, navController)
+        CategoryList(categoryDataset, navController, deleteCategory)
     }
 }
 
 @Composable
-fun categoryItem(category: Category) {
-    Row(modifier = Modifier.padding(all = 8.dp)) {
-        Canvas(modifier = Modifier.size(20.dp).padding(end = 4.dp, top = 4.dp)) {
-            drawCircle(
-                color = Color(category.clr),
-                radius = 5f,
+fun CategoryItem(category: Category, onDeleteButtonClicked: () -> Unit) {
+    val menuExpanded = remember { mutableStateOf(false) }
+    Box {
+        TextButton(onClick = { menuExpanded.value = true }) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Canvas(modifier = Modifier.size(20.dp).padding(end = 4.dp, top = 4.dp)) {
+                    drawCircle(
+                        color = Color(category.clr),
+                        radius = 5f,
+                    )
+                }
+                Text(text = category.name, modifier = Modifier.weight(1f))
+                Text(text = category.amount.toString() + " " + stringResource(R.string.currency_eur))
+            }
+        }
+        DropdownMenu(
+            expanded = menuExpanded.value,
+            onDismissRequest = { menuExpanded.value = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.delete_category)) },
+                onClick = {
+                    // Show alertDialog with confirmation of category deletion
+                    menuExpanded.value = false
+                    onDeleteButtonClicked()
+                }
             )
         }
-        Text(text = category.name, modifier = Modifier.weight(1f))
-        Text(text = category.amount.toString() + " " + stringResource(R.string.currency_eur))
     }
 }
 
 @Composable
-fun categoryList(categories: List<Category>, navController: NavController) {
+fun DeleteCategoryAlertDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    categoryName: String
+) {
+    AlertDialog(
+        text = {
+            Text(text = stringResource(R.string.delete_category) + " \"" + categoryName + "\"?")
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text(stringResource(R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
+fun CategoryList(categories: List<Category>, navController: NavController,
+                 deleteCategory: (category: Category) -> Unit) {
+    val showDeleteDialog = remember { mutableStateOf(false) }
+    val currentCategoryToDelete = remember { mutableStateOf<Category?>(null) }
     LazyColumn {
         items(categories) { category ->
-            categoryItem(category)
+            CategoryItem(category, onDeleteButtonClicked = { currentCategoryToDelete.value = category
+                showDeleteDialog.value = true })
         }
         item {
-            allTransactionsButton(navController)
+            AllTransactionsButton(navController)
+        }
+    }
+    when {
+        showDeleteDialog.value -> {
+            DeleteCategoryAlertDialog(
+                onDismissRequest = { showDeleteDialog.value = false },
+                onConfirmation = {
+                    showDeleteDialog.value = false
+                    deleteCategory(currentCategoryToDelete.value!!)
+                },
+                currentCategoryToDelete.value?.name ?: ""
+            )
         }
     }
 }
 
 @Composable
-fun allTransactionsButton(navController: NavController) {
+fun AllTransactionsButton(navController: NavController) {
     FilledTonalButton(
         onClick = {
             navController.navigate(NavDestinations.TRANSACTIONS)
@@ -91,13 +167,6 @@ fun allTransactionsButton(navController: NavController) {
     ) {
         Text(stringResource(R.string.all_transactions))
     }
-}
-
-fun onClickCategory(category: Category) {
-    // TODO on long tap: show "edit category" button,
-    //  after click on which the edit category dialog shows
-    //  and "delete category button"
-    //  on short tap: show all items in category
 }
 
 fun calculateAmount(categories: List<Category>): Float {
